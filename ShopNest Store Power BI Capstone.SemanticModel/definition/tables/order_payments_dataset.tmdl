@@ -1,0 +1,70 @@
+table order_payments_dataset
+	lineageTag: 5d416358-da60-466a-b6c4-1a8d4bb5b7eb
+
+	measure total_payment_value = SUM(order_payments_dataset[payment_value])
+		lineageTag: 7df17000-e3d2-4be9-975b-36319503aaee
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure total_transaction = COUNT(order_payments_dataset[order_id])
+		formatString: 0
+		lineageTag: aec80782-1fa6-47f8-8a27-baa07bc2d7db
+
+	column order_id
+		dataType: string
+		lineageTag: c1a4584e-fbc1-453f-acc1-2e6fb04b8a17
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_sequential
+		dataType: int64
+		formatString: 0
+		lineageTag: bc492d04-e173-4e10-8c0a-5fc4c4878163
+		summarizeBy: sum
+		sourceColumn: payment_sequential
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_type
+		dataType: string
+		lineageTag: b3410770-c0b9-4acb-b7d3-ad5262974bfd
+		summarizeBy: none
+		sourceColumn: payment_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_installments
+		dataType: int64
+		formatString: 0
+		lineageTag: 6c4c5819-7405-41df-9b0f-c029124fd1cb
+		summarizeBy: sum
+		sourceColumn: payment_installments
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_value
+		dataType: double
+		lineageTag: c0bc1629-59d4-4c98-a365-1b146db9f745
+		summarizeBy: sum
+		sourceColumn: payment_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition order_payments_dataset = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\DATA ANALYST\BI\ShopNest store\Nexusgoods store capstone\Nexusgoods_order_payments_dataset.csv"),[Delimiter=",", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"order_id", type text}, {"payment_sequential", Int64.Type}, {"payment_type", type text}, {"payment_installments", Int64.Type}, {"payment_value", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

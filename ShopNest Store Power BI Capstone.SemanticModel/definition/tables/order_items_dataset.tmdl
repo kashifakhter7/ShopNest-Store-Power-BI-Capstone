@@ -1,0 +1,98 @@
+table order_items_dataset
+	lineageTag: bb53674f-298b-43f7-81bb-32e1b2c73f5b
+
+	measure Total_sales = SUM(order_items_dataset[price])
+		lineageTag: 9647c62f-c615-4667-b035-0c05d7638563
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure total_orders = DISTINCTCOUNT(order_items_dataset[order_id])
+		formatString: 0
+		lineageTag: 0b27cb58-c4c2-4859-9e5b-59e17eb57618
+
+	measure Renenue = SUM(order_items_dataset[price])+ SUM(order_items_dataset[freight_value])
+		lineageTag: e75df8b1-1dab-4eb8-b5dc-5ce99ba876a2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column order_id
+		dataType: string
+		lineageTag: ad293b9a-65a6-4a87-a835-2f44bceb046e
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_item_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 666b47d7-d923-4102-9110-572695b67802
+		summarizeBy: sum
+		sourceColumn: order_item_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: string
+		lineageTag: 46524f3d-9cfe-4848-bac0-b34a851d53fc
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		lineageTag: 145109ff-8784-4d14-a591-c8fd3cdd4296
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column shipping_limit_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f02a133a-15d6-49b4-9f33-91a11cbf3099
+		summarizeBy: none
+		sourceColumn: shipping_limit_date
+
+		variation Variation
+			isDefault
+			relationship: c16fa9d4-4c7a-4818-ba15-5307733d02c1
+			defaultHierarchy: LocalDateTable_b39354b5-4b03-4ced-9537-322f7ed021e9.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: double
+		lineageTag: 617c7e26-e735-4b7d-bb5f-e2a33b676cee
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column freight_value
+		dataType: double
+		lineageTag: e07d9c13-d849-44ec-ad7a-7e93ec9f03f5
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition order_items_dataset = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\DATA ANALYST\BI\ShopNest store\Nexusgoods store capstone\Nexusgoods_order_items_dataset.csv"),[Delimiter=",", Columns=7, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"order_id", type text}, {"order_item_id", Int64.Type}, {"product_id", type text}, {"seller_id", type text}, {"shipping_limit_date", type datetime}, {"price", type number}, {"freight_value", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,35 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-IN
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["geolocation_dataset","customers_dataset","order_items_dataset","order_payments_dataset","order_reviews_dataset","orders_dataset","products_dataset","sellers_dataset","product_category_name_translation"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table geolocation_dataset
+ref table customers_dataset
+ref table order_items_dataset
+ref table DateTableTemplate_9f8514bc-1088-454d-9d62-ea8fea4c71a4
+ref table LocalDateTable_b39354b5-4b03-4ced-9537-322f7ed021e9
+ref table order_payments_dataset
+ref table order_reviews_dataset
+ref table LocalDateTable_5cca3ed3-bddd-45ee-9ed3-504b6a944ea4
+ref table LocalDateTable_38558183-4855-4cdc-8173-48aa3676fcc2
+ref table orders_dataset
+ref table LocalDateTable_3daabdc7-a14f-4bcd-8f11-d59285e6caeb
+ref table LocalDateTable_ec1120c6-a0a0-4705-8ef7-80f073277841
+ref table LocalDateTable_69d17a22-f872-4c9d-88a9-27fb8c1ea3be
+ref table LocalDateTable_f83c0064-0c44-4343-a8aa-39bdc86a27d7
+ref table LocalDateTable_fb0dfa5d-c36c-4139-a5ab-12e2933622b5
+ref table products_dataset
+ref table sellers_dataset
+ref table product_category_name_translation
+
+ref cultureInfo en-US
+

@@ -1,0 +1,173 @@
+table orders_dataset
+	lineageTag: 1017b711-8dcd-4f06-b1c8-d54a6ca5b466
+
+	measure Delayed_Order =
+			
+			CALCULATE(
+			    COUNTROWS(orders_dataset),
+			    orders_dataset[delivery_status] = "Delayed"
+			)
+		formatString: 0
+		lineageTag: ebbfd730-1363-4f44-800e-e307a7699570
+
+	measure 'On-Time Orders' =
+			
+			CALCULATE(
+			    DISTINCTCOUNT(orders_dataset[order_id]),
+			    orders_dataset[delivery_status] = "On Time"
+			)
+		formatString: 0
+		lineageTag: 4353ba51-13a6-4e07-a7af-c4bf64fdbdfa
+
+	column order_id
+		dataType: string
+		lineageTag: 527d02ba-2d49-480a-a88a-7d28afcb4603
+		summarizeBy: none
+		sourceColumn: order_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		lineageTag: 3fab0765-97c6-45c5-9ebc-00cddf5c76b5
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_status
+		dataType: string
+		lineageTag: 285d0e86-42a0-4f5b-9653-9b6972e309be
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_purchase_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7d30adb0-0715-4b3c-bc66-9929ffb964e2
+		summarizeBy: none
+		sourceColumn: order_purchase_timestamp
+
+		variation Variation
+			isDefault
+			relationship: b6607b51-32bb-4807-812b-837fef068a9e
+			defaultHierarchy: LocalDateTable_3daabdc7-a14f-4bcd-8f11-d59285e6caeb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_approved_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 00d7f37d-67ea-49a6-9c24-f2a62b0177e8
+		summarizeBy: none
+		sourceColumn: order_approved_at
+
+		variation Variation
+			isDefault
+			relationship: 092570d7-4fe1-4594-bbb7-c9c17465a901
+			defaultHierarchy: LocalDateTable_ec1120c6-a0a0-4705-8ef7-80f073277841.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_delivered_carrier_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b6934135-db2d-45e1-aa7d-ae63f787e257
+		summarizeBy: none
+		sourceColumn: order_delivered_carrier_date
+
+		variation Variation
+			isDefault
+			relationship: 685bc034-3f81-4fc0-82a5-004b2fea8f8d
+			defaultHierarchy: LocalDateTable_69d17a22-f872-4c9d-88a9-27fb8c1ea3be.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_delivered_customer_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 0a3544ae-8079-4eca-8b44-db02b5837322
+		summarizeBy: none
+		sourceColumn: order_delivered_customer_date
+
+		variation Variation
+			isDefault
+			relationship: f1080764-094c-490d-8a8f-fcc929b26b3f
+			defaultHierarchy: LocalDateTable_f83c0064-0c44-4343-a8aa-39bdc86a27d7.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_estimated_delivery_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 16c3e5ad-985d-40f5-a92e-00603b5ff72c
+		summarizeBy: none
+		sourceColumn: order_estimated_delivery_date
+
+		variation Variation
+			isDefault
+			relationship: 8e5ad2e1-158c-414b-acfe-699792691006
+			defaultHierarchy: LocalDateTable_fb0dfa5d-c36c-4139-a5ab-12e2933622b5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_status =
+			
+			IF(
+			    orders_dataset[order_estimated_delivery_date] < orders_dataset[order_delivered_customer_date],
+			    "Delayed",
+			    "On Time"
+			)
+		lineageTag: ec59c5d6-8c15-4085-a761-1532463ea49e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column purchased_month =
+			
+			FORMAT(
+			    orders_dataset[order_purchase_timestamp],
+			    "MMM YYYY"
+			)
+		lineageTag: df837285-c91d-4c9f-a9cc-5f62029ea8f0
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column YEAR =
+			
+			FORMAT(
+			    orders_dataset[order_purchase_timestamp],
+			    "YYYY"
+			)
+		lineageTag: d5529f32-13ae-41ba-a39b-16932b62c39a
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter =
+			
+			"Q" & FORMAT('orders_dataset'[order_purchase_timestamp], "Q")
+		lineageTag: 0b2c1747-b1d4-4cf3-be9c-f49056762f88
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition orders_dataset = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\DATA ANALYST\BI\ShopNest store\Nexusgoods store capstone\Nexusgoods_orders_dataset (1).csv"),[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"order_id", type text}, {"customer_id", type text}, {"order_status", type text}, {"order_purchase_timestamp", type datetime}, {"order_approved_at", type datetime}, {"order_delivered_carrier_date", type datetime}, {"order_delivered_customer_date", type datetime}, {"order_estimated_delivery_date", type datetime}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

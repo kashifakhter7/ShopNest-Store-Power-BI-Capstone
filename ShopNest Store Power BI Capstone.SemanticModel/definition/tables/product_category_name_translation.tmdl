@@ -1,0 +1,33 @@
+table product_category_name_translation
+	lineageTag: a255e5c3-39bd-4691-84bd-2c15101cf012
+
+	column product_category_name
+		dataType: string
+		lineageTag: 12afbd88-d984-4844-960d-cb2d50381403
+		summarizeBy: none
+		sourceColumn: product_category_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category_name_english
+		dataType: string
+		lineageTag: 44149177-59df-4c58-bba6-ad960f65d2e7
+		summarizeBy: none
+		sourceColumn: product_category_name_english
+
+		annotation SummarizationSetBy = Automatic
+
+	partition product_category_name_translation = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("E:\DATA ANALYST\BI\ShopNest store\Nexusgoods store capstone\product_category_name_translation.csv"),[Delimiter=",", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"product_category_name", type text}, {"product_category_name_english", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
